@@ -1,13 +1,20 @@
 package nl.teunwillems.huffman.objects;
 
+import java.io.Serializable;
 import java.util.Comparator;
+import java.util.Map;
 
 /**
  * Created by Teun on 7-3-2016.
  */
-public class HuffmanNode implements Comparable<HuffmanNode>, Comparator<HuffmanNode> {
+public class HuffmanNode implements Comparable<HuffmanNode>, Comparator<HuffmanNode>, Serializable {
+    public static final boolean LEFT = false;
+    public static final boolean RIGHT = true;
 
-    private char character;
+    public static final char LEFT_CHAR = '0';
+    public static final char RIGHT_CHAR = '1';
+
+    private Character character;
     private int frequency;
     private HuffmanNode leftChild, rightChild;
 
@@ -51,15 +58,17 @@ public class HuffmanNode implements Comparable<HuffmanNode>, Comparator<HuffmanN
         this.rightChild = rightChild;
         updateFrequency();
     }
-
-    public HuffmanNode find(char c) {
-        if (getRightChild() != null && getRightChild().getCharacter() == c) {
-            return this;
-        }else{
-            if (getLeftChild() != null)
-                return getLeftChild().find(c);
+    public Map<Character, String> lookup(Character c, String current, Map<Character, String> map) {
+        if (c == character) {
+            map.put(c, current);
         }
-        return null;
+        if (getLeftChild() != null) {
+            getLeftChild().lookup(c, current + LEFT_CHAR, map);
+        }
+        if (getRightChild() != null) {
+            getRightChild().lookup(c, current + RIGHT_CHAR, map);
+        }
+        return map;
     }
 
     public void updateFrequency() {
@@ -76,4 +85,5 @@ public class HuffmanNode implements Comparable<HuffmanNode>, Comparator<HuffmanN
     public int compare(HuffmanNode o1, HuffmanNode o2) {
         return o1.compareTo(o2);
     }
+
 }

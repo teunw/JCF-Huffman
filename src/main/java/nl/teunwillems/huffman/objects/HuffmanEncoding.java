@@ -1,30 +1,45 @@
 package nl.teunwillems.huffman.objects;
 
-import com.google.gson.Gson;
-
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Teun on 7-3-2016.
  */
-public class HuffmanEncoding {
+public class HuffmanEncoding implements Serializable {
 
-    private List<BitSet> search;
     private HuffmanNode node;
+    private List<List<Boolean>> encoding;
 
-    public static HuffmanEncoding buildEncoding(HuffmanNode node, String input) {
-        return new HuffmanEncoding(node, input);
-    }
-
-    private HuffmanEncoding(HuffmanNode node, String input) {
+    public HuffmanEncoding(HuffmanNode node, String input, Map<Character, String> lookup) {
         this.node = node;
-        search = new ArrayList<>(node.getFrequency());
+        encoding = new ArrayList<>(input.length());
+        for (Character c : input.toCharArray()) {
+            String characterLookup = lookup.get(c);
+            List<Boolean> convertResult = convertEncoding(characterLookup);
+            encoding.add(convertResult);
+        }
     }
 
-    public String toJson() {
-        return new Gson().toJson(this);
+    public HuffmanNode getNode() {
+        return node;
     }
 
+    public List<List<Boolean>> getEncoding() {
+        return encoding;
+    }
+
+    public List<Boolean> convertEncoding(String l) {
+        ArrayList<Boolean> result = new ArrayList<>(l.length());
+        for (char c : l.toCharArray()) {
+            if (c == HuffmanNode.LEFT_CHAR) {
+                result.add(HuffmanNode.LEFT);
+            } else if (c == HuffmanNode.RIGHT_CHAR) {
+                result.add(HuffmanNode.RIGHT);
+            }
+        }
+        return result;
+    }
 }
