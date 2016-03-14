@@ -3,8 +3,6 @@ package nl.teunwillems.huffman.encoders;
 import nl.teunwillems.huffman.objects.HuffmanEncoding;
 import nl.teunwillems.huffman.objects.HuffmanNode;
 
-import java.util.List;
-
 /**
  * Created by Teun on 7-3-2016.
  */
@@ -19,12 +17,17 @@ public class HuffmanDecoder {
     }
 
     public void processResult() {
-        HuffmanNode rootNode = huffmanEncoding.getNode();
-        for (List<Boolean> treePath : huffmanEncoding.getEncoding()) {
+        // Regenerate the tree from frequency encoding
+        TreeGenerator treeGenerator = new TreeGenerator(huffmanEncoding.getFrequencies());
+        HuffmanNode rootNode = treeGenerator.buildTree();
+        // Decode characters from boolean path
+        for (boolean[] treePath : huffmanEncoding.getEncodingArray()) {
             HuffmanNode node = rootNode;
             for (boolean b : treePath) {
+                // Go to next node, depending on the boolean
                 node = (b) ? node.getRightChild() : node.getLeftChild();
             }
+            // Append character to result
             result += node.getCharacter();
         }
     }

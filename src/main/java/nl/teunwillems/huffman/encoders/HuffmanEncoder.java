@@ -9,7 +9,8 @@ import java.util.*;
  */
 public class HuffmanEncoder {
 
-    private PriorityQueue<HuffmanNode> nodeQueue;
+    private TreeGenerator treeGenerator;
+    private Map<Character, Integer> frequencies;
     private HuffmanNode node;
 
     private String input;
@@ -19,61 +20,23 @@ public class HuffmanEncoder {
     }
 
     public void buildFrequencyQueue() {
-        Map<Character, Integer> freq = countCharacters(input);
-        nodeQueue = new PriorityQueue<>(HuffmanNode::compareTo);
-        freq.forEach(this::addToQueue);
+        frequencies = countCharacters(input);
+        treeGenerator = new TreeGenerator(frequencies);
     }
 
     public HuffmanNode buildTree() {
-
-        System.out.println("Starting with " + nodeQueue.size() + " characters");
-        while (nodeQueue.size() > 1) processQueue();
-
-        this.node = nodeQueue.poll();
-        return node;
-    }
-
-    private void processQueue() {
-        Iterator<HuffmanNode> nodeIterator = nodeQueue.iterator();
-        HuffmanNode newNode = null;
-        List<HuffmanNode> toAdd = new ArrayList<>(nodeQueue.size() / 2);
-        while (nodeIterator.hasNext()) {
-            HuffmanNode nextNode = nodeIterator.next();
-            // Check if previous node is done
-            if (newNode == null) {
-                newNode = new HuffmanNode(nextNode);
-                continue;
-            }
-            // If right child is not set, this is the second time
-            // Add right child and continue
-            if (newNode.getRightChild() == null) {
-                newNode.setRightChild(nextNode);
-                toAdd.add(newNode);
-                newNode = null;
-            }
-        }
-        // If right child hasn't been added to newNode
-        if (newNode != null && newNode.getRightChild() == null)
-            toAdd.add(newNode);
-
-        nodeQueue.clear();
-        toAdd.sort(HuffmanNode::compareTo);
-        nodeQueue.addAll(toAdd);
-        toAdd.clear();
+        return (node = treeGenerator.buildTree());
     }
 
     public Map<Character, String> lookup() {
         HashMap<Character, String> lookup = new HashMap<>();
         for (char c : input.toCharArray()) {
+            // Continue if character is already in lookup table
             if (lookup.containsKey(c)) continue;
             String s = "";
             node.lookup(c, s, lookup);
         }
         return lookup;
-    }
-
-    private void addToQueue(char c, int f) {
-        nodeQueue.add(new HuffmanNode(c, f));
     }
 
     private Map<Character, Integer> countCharacters(String str) {
@@ -94,5 +57,21 @@ public class HuffmanEncoder {
             frequencies.put(c, freq);
         }
         return frequencies;
+    }
+
+    public TreeGenerator getTreeGenerator() {
+        return treeGenerator;
+    }
+
+    public Map<Character, Integer> getFrequencies() {
+        return frequencies;
+    }
+
+    public HuffmanNode getNode() {
+        return node;
+    }
+
+    public String getInput() {
+        return input;
     }
 }

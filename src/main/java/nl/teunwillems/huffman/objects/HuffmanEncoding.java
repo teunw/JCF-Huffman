@@ -1,8 +1,6 @@
 package nl.teunwillems.huffman.objects;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,34 +8,41 @@ import java.util.Map;
  */
 public class HuffmanEncoding implements Serializable {
 
-    private HuffmanNode node;
-    private List<List<Boolean>> encoding;
+    private Map<Character, Integer> frequencies;
+    private boolean[][] encodingArray;
 
-    public HuffmanEncoding(HuffmanNode node, String input, Map<Character, String> lookup) {
-        this.node = node;
-        encoding = new ArrayList<>(input.length());
-        for (Character c : input.toCharArray()) {
+    public HuffmanEncoding(Map<Character, Integer> frequencies, String input, Map<Character, String> lookup) {
+        this.frequencies = frequencies;
+        encodingArray = new boolean[input.length()][];
+        // Encoding to booleans
+        char[] charArray = input.toCharArray();
+        for (int i = 0; i < charArray.length; i++) {
+            char c = charArray[i];
+            // Lookup character code inside map
             String characterLookup = lookup.get(c);
-            List<Boolean> convertResult = convertEncoding(characterLookup);
-            encoding.add(convertResult);
+            // Convert result to array of booleans
+            boolean[] convertResult = convertEncoding(characterLookup);
+            encodingArray[i] = convertResult;
         }
     }
 
-    public HuffmanNode getNode() {
-        return node;
+    public boolean[][] getEncodingArray() {
+        return encodingArray;
     }
 
-    public List<List<Boolean>> getEncoding() {
-        return encoding;
+    public Map<Character, Integer> getFrequencies() {
+        return frequencies;
     }
 
-    public List<Boolean> convertEncoding(String l) {
-        ArrayList<Boolean> result = new ArrayList<>(l.length());
-        for (char c : l.toCharArray()) {
+    public boolean[] convertEncoding(String l) {
+        boolean[] result = new boolean[l.length()];
+        char[] chars = l.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
             if (c == HuffmanNode.LEFT_CHAR) {
-                result.add(HuffmanNode.LEFT);
+                result[i] = HuffmanNode.LEFT;
             } else if (c == HuffmanNode.RIGHT_CHAR) {
-                result.add(HuffmanNode.RIGHT);
+                result[i] = HuffmanNode.RIGHT;
             }
         }
         return result;

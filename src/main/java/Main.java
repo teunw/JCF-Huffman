@@ -41,7 +41,7 @@ public class Main {
             HuffmanNode finalNode = encoder.buildTree();
 
             Map<Character, String> lookup = encoder.lookup();
-            HuffmanEncoding encoding = new HuffmanEncoding(finalNode, fileContent, lookup);
+            HuffmanEncoding encoding = new HuffmanEncoding(encoder.getFrequencies(), fileContent, lookup);
 
             // Write output
             System.out.println("Specify output file");
